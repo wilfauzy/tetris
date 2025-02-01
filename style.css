@@ -15,3 +15,23 @@ canvas {
   border: 2px solid #fff;
   background-color: #222;
 }
+
+.controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 18px;
+  background-color: #333;
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #555;
+}
