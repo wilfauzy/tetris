@@ -1,6 +1,5 @@
 /* style.css */
 
-/* Global Styling */
 body {
   display: flex;
   flex-direction: column;
@@ -20,17 +19,13 @@ canvas {
   max-height: 80vh;
 }
 
-.controls {
-  display: flex;
-  gap: 10px;
+.music-control {
   margin-top: 20px;
-  flex-wrap: wrap;
-  justify-content: center;
 }
 
-button {
+#toggle-music {
   padding: 10px 20px;
-  font-size: 18px;
+  font-size: 16px;
   background-color: #333;
   color: #fff;
   border: 2px solid #fff;
@@ -39,31 +34,6 @@ button {
   transition: background-color 0.3s ease;
 }
 
-button:hover {
+#toggle-music:hover {
   background-color: #555;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  canvas {
-    width: 90vw;
-    height: auto;
-  }
-
-  button {
-    font-size: 14px;
-    padding: 8px 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  canvas {
-    width: 100vw;
-    height: auto;
-  }
-
-  button {
-    font-size: 12px;
-    padding: 6px 12px;
-  }
 }
