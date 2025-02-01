@@ -1,233 +1,24 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>JavaScript Tetris</title>
-    <style>
-        canvas {
-            border: 1px solid black;
-        }
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: #f0f0f0;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tetris Game</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>TETRIS</h1>
-    <div id="score">Score: 0</div>
-    <canvas id="tetris" width="240" height="400"></canvas>
-    <div id="gameOver" style="display: none;">Game Over!<br>Refresh untuk main lagi</div>
+  <h1>Tetris Game 🕹️</h1>
+  <canvas id="tetris"></canvas>
 
-<script>
-const canvas = document.getElementById('tetris');
-const ctx = canvas.getContext('2d');
-const scoreElement = document.getElementById('score');
-const BLOCK_SIZE = 20;
-const BOARD_WIDTH = 10;
-const BOARD_HEIGHT = 20;
-let score = 0;
+  <!-- Tombol Virtual -->
+  <div class="controls">
+    <button id="left">←</button>
+    <button id="right">→</button>
+    <button id="down">↓</button>
+    <button id="rotate-left">↺</button>
+    <button id="rotate-right">↻</button>
+  </div>
 
-// Inisialisasi board
-const board = Array(BOARD_HEIGHT).fill().map(() => Array(BOARD_WIDTH).fill(0));
-
-// Bentuk-bentuk tetromino
-const PIECES = [
-    [[1,1,1,1]], // I
-    [[1,1,1],[0,1,0]], // T
-    [[1,1,1],[1,0,0]], // L
-    [[1,1,1],[0,0,1]], // J
-    [[1,1],[1,1]], // O
-    [[1,1,0],[0,1,1]], // S
-    [[0,1,1],[1,1,0]]  // Z
-];
-
-const COLORS = [
-    '#00f0f0', // cyan
-    '#f0f000', // yellow
-    '#ff8000', // orange
-    '#0000f0', // blue
-    '#f000f0', // purple
-    '#f00000', // red
-    '#00f000'  // green
-];
-
-let currentPiece = null;
-let currentPieceX = 0;
-let currentPieceY = 0;
-let currentColor = '';
-
-// Fungsi untuk membuat piece baru
-function newPiece() {
-    const pieceIdx = Math.floor(Math.random() * PIECES.length);
-    currentPiece = PIECES[pieceIdx];
-    currentColor = COLORS[pieceIdx];
-    currentPieceX = Math.floor(BOARD_WIDTH/2 - currentPiece[0].length/2);
-    currentPieceY = 0;
-    
-    if (!canMove(currentPiece, currentPieceX, currentPieceY)) {
-        gameOver();
-    }
-}
-
-// Cek tabrakan
-function canMove(piece, offsetX, offsetY) {
-    for (let y = 0; y < piece.length; y++) {
-        for (let x = 0; x < piece[y].length; x++) {
-            if (piece[y][x]) {
-                const newX = offsetX + x;
-                const newY = offsetY + y;
-                if (
-                    newX < 0 ||
-                    newX >= BOARD_WIDTH ||
-                    newY >= BOARD_HEIGHT ||
-                    (newY >= 0 && board[newY][newX])
-                ) {
-                    return false;
-                }
-            }
-        }
-    }
-    return true;
-}
-
-// Gabungkan piece ke board
-function merge() {
-    for (let y = 0; y < currentPiece.length; y++) {
-        for (let x = 0; x < currentPiece[y].length; x++) {
-            if (currentPiece[y][x]) {
-                board[currentPieceY + y][currentPieceX + x] = currentColor;
-            }
-        }
-    }
-    clearLines();
-    newPiece();
-}
-
-// Rotasi piece
-function rotate() {
-    const rotated = currentPiece[0].map((_, i) =>
-        currentPiece.map(row => row[i]).reverse()
-    );
-    if (canMove(rotated, currentPieceX, currentPieceY)) {
-        currentPiece = rotated;
-    }
-}
-
-// Hapus garis yang penuh
-function clearLines() {
-    let linesCleared = 0;
-    for (let y = BOARD_HEIGHT - 1; y >= 0; y--) {
-        if (board[y].every(cell => cell !== 0)) {
-            board.splice(y, 1);
-            board.unshift(Array(BOARD_WIDTH).fill(0));
-            linesCleared++;
-            y++;
-        }
-    }
-    if (linesCleared > 0) {
-        score += linesCleared * 100;
-        scoreElement.textContent = `Score: ${score}`;
-    }
-}
-
-// Gambar board
-function draw() {
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Gambar board
-    for (let y = 0; y < BOARD_HEIGHT; y++) {
-        for (let x = 0; x < BOARD_WIDTH; x++) {
-            if (board[y][x]) {
-                ctx.fillStyle = board[y][x];
-                ctx.fillRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE-1, BLOCK_SIZE-1);
-            }
-        }
-    }
-
-    // Gambar piece saat ini
-    if (currentPiece) {
-        ctx.fillStyle = currentColor;
-        for (let y = 0; y < currentPiece.length; y++) {
-            for (let x = 0; x < currentPiece[y].length; x++) {
-                if (currentPiece[y][x]) {
-                    ctx.fillRect(
-                        (currentPieceX + x) * BLOCK_SIZE,
-                        (currentPieceY + y) * BLOCK_SIZE,
-                        BLOCK_SIZE-1,
-                        BLOCK_SIZE-1
-                    );
-                }
-            }
-        }
-    }
-}
-
-// Game over
-function gameOver() {
-    document.getElementById('gameOver').style.display = 'block';
-    document.removeEventListener('keydown', handleInput);
-}
-
-// Input keyboard
-function handleInput(e) {
-    switch(e.keyCode) {
-        case 37: // Kiri
-            if (canMove(currentPiece, currentPieceX - 1, currentPieceY)) {
-                currentPieceX--;
-            }
-            break;
-        case 39: // Kanan
-            if (canMove(currentPiece, currentPieceX + 1, currentPieceY)) {
-                currentPieceX++;
-            }
-            break;
-        case 40: // Bawah
-            if (canMove(currentPiece, currentPieceX, currentPieceY + 1)) {
-                currentPieceY++;
-            }
-            break;
-        case 38: // Atas (Rotasi)
-            rotate();
-            break;
-        case 32: // Spasi (Drop cepat)
-            while (canMove(currentPiece, currentPieceX, currentPieceY + 1)) {
-                currentPieceY++;
-            }
-            merge();
-            break;
-    }
-}
-
-// Game loop
-let lastTime = 0;
-let dropCounter = 0;
-let dropInterval = 1000;
-
-function update(time = 0) {
-    const deltaTime = time - lastTime;
-    lastTime = time;
-    
-    dropCounter += deltaTime;
-    if (dropCounter > dropInterval) {
-        if (canMove(currentPiece, currentPieceX, currentPieceY + 1)) {
-            currentPieceY++;
-        } else {
-            merge();
-        }
-        dropCounter = 0;
-    }
-
-    draw();
-    requestAnimationFrame(update);
-}
-
-// Mulai game
-document.addEventListener('keydown', handleInput);
-newPiece();
-update();
-</script>
+  <script src="tetris.js"></script>
 </body>
 </html>
