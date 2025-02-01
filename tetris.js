@@ -3,7 +3,19 @@
 const canvas = document.getElementById('tetris');
 const context = canvas.getContext('2d');
 
-context.scale(20, 20);
+// Fungsi untuk mengatur ukuran canvas secara dinamis
+function resizeCanvas() {
+  const scale = window.innerWidth > 768 ? 20 : 15; // Skala lebih kecil untuk layar kecil
+  const rows = 20;
+  const cols = 12;
+
+  canvas.width = cols * scale;
+  canvas.height = rows * scale;
+  context.scale(scale, scale);
+}
+
+resizeCanvas(); // Panggil saat halaman dimuat
+window.addEventListener('resize', resizeCanvas); // Sesuaikan saat layar di-resize
 
 // Fungsi-fungsi utama Tetris (sama seperti sebelumnya)
 function arenaSweep() { /* ... */ }
