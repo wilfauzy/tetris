@@ -3,6 +3,27 @@
 const canvas = document.getElementById('tetris');
 const context = canvas.getContext('2d');
 
+// Musik
+const music = new Audio('tetris-music.mp3'); // Ganti dengan path file musik kamu
+music.loop = true; // Musik bakal terus diulang
+let isMusicPlaying = false;
+
+// Fungsi buat toggle musik
+function toggleMusic() {
+  if (isMusicPlaying) {
+    music.pause();
+    document.getElementById('toggle-music').innerText = '🎵 Play Music';
+  } else {
+    music.play().catch((error) => {
+      console.error('Error playing music:', error);
+    });
+    document.getElementById('toggle-music').innerText = '🎵 Pause Music';
+  }
+  isMusicPlaying = !isMusicPlaying;
+}
+
+document.getElementById('toggle-music').addEventListener('click', toggleMusic);
+
 // Fungsi untuk mengatur ukuran canvas secara dinamis
 function resizeCanvas() {
   const scale = window.innerWidth > 768 ? 20 : 15; // Skala lebih kecil untuk layar kecil
@@ -17,7 +38,7 @@ function resizeCanvas() {
 resizeCanvas(); // Panggil saat halaman dimuat
 window.addEventListener('resize', resizeCanvas); // Sesuaikan saat layar di-resize
 
-// Fungsi-fungsi utama Tetris (sama seperti sebelumnya)
+// Fungsi-fungsi utama Tetris
 function arenaSweep() { /* ... */ }
 function collide(arena, player) { /* ... */ }
 function createMatrix(w, h) { /* ... */ }
@@ -89,3 +110,10 @@ canvas.addEventListener('touchend', (event) => {
 playerReset();
 updateScore();
 update();
+
+// Otomatis mainkan musik saat game dimulai
+music.play().catch((error) => {
+  console.error('Error playing music:', error);
+});
+isMusicPlaying = true;
+document.getElementById('toggle-music').innerText = '🎵 Pause Music';
